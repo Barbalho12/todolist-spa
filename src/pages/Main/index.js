@@ -1,4 +1,7 @@
 import React from 'react';
+
+import API from '../../API'
+
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -9,39 +12,20 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-
 import ClearIcon from '@material-ui/icons/Clear';
 import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import RestoreIcon from '@material-ui/icons/Restore';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 
-
-
 import TextField from '@material-ui/core/TextField';
-
-import { Container, Title } from './styles';
-import { findByLabelText } from '@testing-library/react';
+import { Container } from './styles';
 
 import Card from '@material-ui/core/Card';
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     width: '100%',
-//     maxWidth: 360,
-//     display: "flex",
-//     flexDirection: "column",
-//     justifyContent: "center",
-//     // backgroundColor: theme.palette.background.paper,
-//   },
-// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '0 2px',
     transform: 'scale(0.8)',
     
-  },
-  title: {
-    fontSize: 14,
   },
   pos: {
     marginBottom: 12,
@@ -82,102 +63,128 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+let starting  = true;
+
 function CheckboxList() {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([0]);
+  const [name,setName] = React.useState();
+  const [optionPage, setOptionPage] = React.useState(0);
+  const [listItens, setListItens] = React.useState([]);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+  let tempOptionPage = 0;
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+  function update(){
+    console.log(tempOptionPage);
+    if(tempOptionPage === 0){
+      API.findAll().then(response => {
+        response.json().then( list => {
+          setListItens(list);
+          console.log(list);
+        });
+      });
+    } else if(tempOptionPage === 1){
+      API.findAllLefts().then(response => {
+        response.json().then( list => {
+          setListItens(list);
+          console.log(list);
+        });
+      });
+    } else if(tempOptionPage === 2){
+      API.findAllCompleteds().then(response => {
+        response.json().then( list => {
+          setListItens(list);
+          console.log(list);
+        });
+      });
     }
+  }
 
-    setChecked(newChecked);
+  if(starting){
+    update();
+    starting = false;
+  }
+
+  const handleToggle = (task) => () => {
+    task.completed = !task.completed;
+    API.setCompleted(task.id, task.completed).then(response => {
+      update();
+    })
   };
 
-  return (
-    <List className={classes.root}>
-      {[0, 1, 2, 3].map((value) => {
-        const labelId = `checkbox-list-label-${value}`;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    API.create(name).then( response => {
+      setName('');
+      update();
+    });
+  }
 
-        return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={checked.indexOf(value) !== -1}
-                tabIndex={-1}
-                disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
-              />
-            </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="clear">
-                <ClearIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      })}
-    </List>
-  );
-}
+  const buttomNavigationChange = (event, newValue) => {
+    setOptionPage(newValue);
+    tempOptionPage = newValue;
+    update();
+  }
 
-function SimpleBottomNavigation() {
-  const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  
+
+  const deleteTask = (id) => {
+    API.delete(id).then( response => {
+      update();
+    });
+  }
 
   return (
-    <BottomNavigation
-      value={value}
-      onChange={(event, newValue) => {
-        setValue(newValue);
-      }}
-      showLabels
-      className={classes.root}
-    >
-      <BottomNavigationAction label="Todas" icon={<FormatListBulletedIcon />} />
-      <BottomNavigationAction label="Pendentes" icon={<QueryBuilderIcon />} />
-      <BottomNavigationAction label="Concluídas" icon={<DoneAllIcon />} />
-    </BottomNavigation>
-  );
-}
+    <div>
+      <form className={classes.inputtext} onSubmit={handleSubmit} noValidate autoComplete="off">
+        <TextField id="standard-basic" label="Nova tarefa" onChange={ (e) => { setName(e.target.value)} } className={classes.inputtext} />
+        <Button variant="contained" onClick={handleSubmit} color="primary" className={classes.button}>ADICIONAR</Button>
+      </form>
 
-function ActionButton() {
-  const classes = useStyles();
-  return (
-    <Button variant="contained" color="primary" className={classes.button}>ADICIONAR</Button>
-  );
-}
 
-function BasicTextFields() {
-  const classes = useStyles();
+      <List className={classes.root}>
+        {listItens.map((task) => {
+          return (
+            <ListItem key={`checkbox-list-${task.id}`} role={undefined} dense button onClick={handleToggle(task)}>
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={task.completed}
+                  tabIndex={task.id}
+                  disableRipple
+                />
+              </ListItemIcon>
+              <ListItemText id={`checkbox-description-${task.id}`} primary={task.description} />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" color="secondary" aria-label="clear" onClick={() => { {deleteTask(task.id)} }} >
+                  <ClearIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          );
+        })}
+      </List>
 
-  return (
-    <form className={classes.inputtext} noValidate autoComplete="off">
-      <TextField id="standard-basic" label="Nova tarefa" className={classes.inputtext}/>
-    </form>
+
+      <BottomNavigation
+        value={optionPage}
+        onChange={buttomNavigationChange} 
+        showLabels className={classes.root}>
+        <BottomNavigationAction label="Todas"  value={0} icon={<FormatListBulletedIcon />} />
+        <BottomNavigationAction label="Pendentes" value={1}  icon={<QueryBuilderIcon />} />
+        <BottomNavigationAction label="Concluídas" value={2}  icon={<DoneAllIcon />} />
+      </BottomNavigation>
+      </div>
   );
 }
 
 function Main() {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
 
-  
   return (
     <Container className={classes.container}>
-      <h1 class={classes.title}>TODO List</h1>
+      <h1 className={classes.title}>TODO List</h1>
       <Card className={classes.root}>
-        <BasicTextFields/>
-        <ActionButton/>
         <CheckboxList/>
-        <SimpleBottomNavigation/>
       </Card>
     </Container>
   );
