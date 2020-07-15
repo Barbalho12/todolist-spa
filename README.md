@@ -3,7 +3,7 @@
 
 <p align="center"><img src="doc/print-tela.png" width="400px"/></p>
 
-O serviço está diposnível no endereço `https://barbalho12.github.io/todolist-spa`
+O serviço está diposnível no endereço https://barbalho12.github.io/todolist-spa
 
 ### Dependêcnias
 
