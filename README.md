@@ -12,9 +12,6 @@ O serviço está diposnível no endereço `https://barbalho12.github.io/todolist
 * [npm](https://www.npmjs.com/get-npm)
 * [yarn](https://classic.yarnpkg.com/en/docs/install#debian-stable)
 
-
-git commit -m "Finaliza descrição de configuração inicial do projeto"
-
 ### Executando localmente
 
 Clone o projeto
@@ -35,3 +32,9 @@ yarn start
 ```
 
 O serviço poderá ser acessado através do endereço [http://localhost:3000](http://localhost:3000)
+
+
+### Outros Projetos
+
+- [Backend](https://github.com/Barbalho12/todolist-backend)
+- [Flutter](https://github.com/Barbalho12/todolist-flutter)
