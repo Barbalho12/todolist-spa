@@ -1,18 +1,22 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import Routes from './routes';
+// import Routes from './routes';
 
 import GlobalStyle, { Container } from './styles';
 
+
+import Main from 'pages/Main';
+
 function App() {
   return (
-    // <BrowserRouter>
+    <BrowserRouter>
       <GlobalStyle />
       <Container>
-        <Routes />
+        {/* <Routes /> */}
+        <Main />
       </Container>
-    // </BrowserRouter>
+    </BrowserRouter>
   );
 }
 
