@@ -1,6 +1,6 @@
 
-const PATH = "http://10.40.1.57:8080/tasks";
-// const API = "https://tdl-backend.herokuapp.com/tasks/";
+// const PATH = "http://10.40.1.57:8080/tasks";
+const PATH = "https://tdl-backend.herokuapp.com/tasks/";
 
 const API = {
     findAll: async () => {
