@@ -28,6 +28,16 @@ import Card from '@material-ui/core/Card';
 
 
 const useStyles = makeStyles((theme) => ({
+
+  list:{
+    maxHeight: 300, 
+    overflow: 'auto',
+    width: '100%',
+    maxWidth: 360,
+    justifyContent: "center",
+    backgroundColor: theme.palette.background.paper,
+    padding:'10px'
+  },
   root: {
     width: '100%',
     maxWidth: 360,
@@ -74,26 +84,22 @@ function CheckboxList() {
   let tempOptionPage = 0;
 
   function update(){
-    console.log(tempOptionPage);
     if(tempOptionPage === 0){
       API.findAll().then(response => {
         response.json().then( list => {
           setListItens(list);
-          console.log(list);
         });
       });
     } else if(tempOptionPage === 1){
       API.findAllLefts().then(response => {
         response.json().then( list => {
           setListItens(list);
-          console.log(list);
         });
       });
     } else if(tempOptionPage === 2){
       API.findAllCompleteds().then(response => {
         response.json().then( list => {
           setListItens(list);
-          console.log(list);
         });
       });
     }
@@ -101,6 +107,7 @@ function CheckboxList() {
 
   if(starting){
     update();
+    setName("");
     starting = false;
   }
 
@@ -136,33 +143,35 @@ function CheckboxList() {
   return (
     <div>
       <form className={classes.inputtext} onSubmit={handleSubmit} noValidate autoComplete="off">
-        <TextField id="standard-basic" label="Nova tarefa" onChange={ (e) => { setName(e.target.value)} } className={classes.inputtext} />
+        <TextField id="standard-basic" value={name} label="Nova tarefa" onChange={ (e) => { setName(e.target.value)} } className={classes.inputtext} />
         <Button variant="contained" onClick={handleSubmit} color="primary" className={classes.button}>ADICIONAR</Button>
       </form>
 
 
-      <List className={classes.root}>
-        {listItens.map((task) => {
-          return (
-            <ListItem key={`checkbox-list-${task.id}`} role={undefined} dense button onClick={handleToggle(task)}>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={task.completed}
-                  tabIndex={task.id}
-                  disableRipple
-                />
-              </ListItemIcon>
-              <ListItemText id={`checkbox-description-${task.id}`} primary={task.description} />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" color="secondary" aria-label="clear" onClick={() => { {deleteTask(task.id)} }} >
-                  <ClearIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          );
-        })}
-      </List>
+     
+        <List className={classes.list}>
+          {listItens.map((task) => {
+            return (
+              <ListItem key={`checkbox-list-${task.id}`} role={undefined} dense button onClick={handleToggle(task)}>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={task.completed}
+                    tabIndex={task.id}
+                    disableRipple
+                  />
+                </ListItemIcon>
+                <ListItemText id={`checkbox-description-${task.id}`} primary={task.description} />
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" color="secondary" aria-label="clear" onClick={() => { {deleteTask(task.id)} }} >
+                    <ClearIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
+        </List>
+     
 
 
       <BottomNavigation
