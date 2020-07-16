@@ -1,6 +1,8 @@
 
-// const PATH = "http://10.40.1.57:8080/tasks";
-const PATH = "https://tdl-backend.herokuapp.com/tasks/";
+// const PATH_BASE = "http://10.40.1.57:8080";
+const PATH_BASE = `https://tdl-backend.herokuapp.com`;
+
+const PATH = `${PATH_BASE}/tasks`;
 
 const API = {
     findAll: async () => {
@@ -55,7 +57,9 @@ const API = {
             body:JSON.stringify(task)
         });
         return response;
-    }
+    },
+
+    webSocketURL:`${PATH_BASE}/subscribe`
 }
 
 export default API;

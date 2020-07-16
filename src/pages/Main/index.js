@@ -27,6 +27,10 @@ import { Container } from './styles';
 import Card from '@material-ui/core/Card';
 
 
+// import Websocket from 'react-websocket';
+import SockJsClient from 'react-stomp';
+
+
 const useStyles = makeStyles((theme) => ({
 
   list:{
@@ -80,6 +84,7 @@ function CheckboxList() {
   const [name,setName] = React.useState();
   const [optionPage, setOptionPage] = React.useState(0);
   const [listItens, setListItens] = React.useState([]);
+  const [clientRef, setClientRef] = React.useState([]);
 
   let tempOptionPage = 0;
 
@@ -182,6 +187,9 @@ function CheckboxList() {
         <BottomNavigationAction label="Pendentes" value={1}  icon={<QueryBuilderIcon />} />
         <BottomNavigationAction label="Concluídas" value={2}  icon={<DoneAllIcon />} />
       </BottomNavigation>
+      <SockJsClient url={API.webSocketURL} topics={['/topic/tasks']}
+            onMessage={(msg) => { update(); }}
+            ref={ (client) => { setClientRef(client) }} />
       </div>
   );
 }
